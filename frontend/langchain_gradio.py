@@ -3,7 +3,7 @@ from typing import Optional, Tuple
 
 import gradio as gr
 from langchain.chains import ConversationChain
-from langchain.llms import OpenAI
+from langchain.llms import OpenAI, Anthropic, Cohere
 from threading import Lock
 from dotenv import load_dotenv
 
@@ -46,7 +46,8 @@ block = gr.Blocks(css=".gradio-container ")  # {background-color: lightgray}
 
 with block:
     with gr.Row():
-        gr.Markdown("<h3><center>SF LLM Stack Hackathon - Team Good Bing</center></h3>")
+        gr.Markdown(
+            "<h3><center>SF LLM Stack Hackathon - Team Good Bing</center></h3>")
 
     chatbot = gr.Chatbot()
 
@@ -67,7 +68,6 @@ with block:
         ],
         inputs=message,
     )
-
 
     gr.HTML(
         "<center><a target='_blank' href='https://github.com/AnthonyMichaelTDM/LLM-Stack-Hackathon-2023'>GitHub Repo</a>; Powered by <a href='https://github.com/hwchase17/langchain'>LangChain 🦜️🔗</a></center>"
