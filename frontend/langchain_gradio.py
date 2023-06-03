@@ -1,4 +1,5 @@
-from typing import Optional, Tuple
+import os
+from typing import Any, List, Optional, Self, Tuple
 
 import gradio as gr
 from langchain.chains import ConversationChain
@@ -13,35 +14,41 @@ from qdrant_client.models import Filter, FieldCondition, Range
 
 client = QdrantClient(url="http://localhost:6333")
 
+from langchain.schema import (
+    BaseMessage,
+    AIMessage,
+    HumanMessage,
+    SystemMessage
+)
 from dotenv import load_dotenv
 
 load_dotenv()
 
-
-def load_chain():
+def load_chain() -> ChatOpenAI:
     """Logic for loading the chain you want to use should go here."""
-    llm = ChatOpenAI(temperature=0, model="gpt-4")
+    llm = ChatOpenAI(temperature=0, model='gpt-4', openai_organization=os.getenv('OPENAI_ORG_ID'), client=None)
     # chain = ConversationChain(llm=llm)
     return llm
 
 
 class ChatWrapper:
-    def __init__(self):
+    def __init__(self) -> None:
         self.lock = Lock()
 
     def __call__(
-        self,
-        inp: str,
-        history: Optional[Tuple[str, str]],
-    ):
+        self, inp: str, history: Optional[List[Tuple[str, str]]], chain: Optional[ConversationChain]
+    ) -> Tuple[Any, List[Tuple[str, str]]]:
         """Execute the chat functionality."""
         self.lock.acquire()
+        
         try:
             history = history or []
+            # print(history)
             chat = load_chain()
 
-            messages = [
-                SystemMessage(content="You are a helpful assistant."),
+            messages: list[BaseMessage] = [
+                SystemMessage(
+                    content="You are a helpful assistant."),
             ]
             for h in history:
                 messages += [HumanMessage(content=h[0])]
@@ -95,7 +102,8 @@ class ChatWrapper:
             messages += [HumanMessage(content=inp)]
 
             # Run chain and append input.
-            output = chat(messages).content
+            output: str = chat(messages).content
+
             history.append((inp, output))
         except Exception as e:
             raise e
