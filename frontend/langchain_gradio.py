@@ -48,10 +48,9 @@ class ChatWrapper:
 
             messages += [HumanMessage(content=inp)]
 
-            # print(messages)
-
             # Run chain and append input.
             output: str = chat(messages).content
+
             history.append((inp, output))
         except Exception as e:
             raise e
