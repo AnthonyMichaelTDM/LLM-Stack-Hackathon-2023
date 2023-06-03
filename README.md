@@ -45,5 +45,5 @@
 
 ## Run gradio
 ```
-gradio src/langchain_gradio.py
+gradio frontend/langchain_gradio.py
 ```

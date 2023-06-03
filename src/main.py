@@ -57,4 +57,3 @@ if __name__ == "__main__":
     test_chat()
     # demo = gr.Interface(fn=greet, inputs="text", outputs="text")
     # demo.launch()  
-    
