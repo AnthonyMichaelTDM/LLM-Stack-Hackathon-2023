@@ -1,0 +1,7 @@
+relevanceai
+pandas
+tqdm
+vecdb
+gdown
+json
+
