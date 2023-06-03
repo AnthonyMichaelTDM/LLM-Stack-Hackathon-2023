@@ -64,10 +64,10 @@ class ChatWrapper:
             )
 
 
-            thread_id = (relevant_chats[0].payload or dict()).get("thread_id")
+            thread_id = relevant_chats[0].payload["thread_id"]
             
             relevant_chats_text = [
-                (relevant_chats[i].payload or dict()).get("chat_text")
+                relevant_chats[i].payload["chat_text"]
                 for i in range(len(relevant_chats))
             ]
 
@@ -85,7 +85,7 @@ class ChatWrapper:
                 limit=5,  # Return 5 closest points
             )
             relevant_messages_text = [
-                (relevant_messages[i].payload or dict()).get("message_text")
+                relevant_messages[i].payload["message_text"]
                 for i in range(len(relevant_messages))
             ]
 
