@@ -26,11 +26,7 @@
 3. Sign up for an OpenAI account and get an API key [here](https://beta.openai.com/account/api-keys).
 4. Populate a `.env` file with your key in the format of `.env.template`, and reactivate the environment.
 
-## Install dependencies
-
-- `pip install -r requirements.txt`
-
-## save requirements
+## Save Requirements
 
 - `pip freeze > requirements.txt`
 
