@@ -4,7 +4,13 @@ from typing import Optional, Tuple
 import gradio as gr
 from langchain.chains import ConversationChain
 from langchain.llms import OpenAI, Anthropic, Cohere
+from langchain.chat_models import ChatOpenAI
 from threading import Lock
+from langchain.schema import (
+    AIMessage,
+    HumanMessage,
+    SystemMessage
+)
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -12,9 +18,9 @@ load_dotenv()
 
 def load_chain():
     """Logic for loading the chain you want to use should go here."""
-    llm = OpenAI(temperature=0)
-    chain = ConversationChain(llm=llm)
-    return chain
+    llm = ChatOpenAI(temperature=0, model='gpt-4')
+    # chain = ConversationChain(llm=llm)
+    return llm
 
 
 class ChatWrapper:
@@ -28,10 +34,23 @@ class ChatWrapper:
         self.lock.acquire()
         try:
             history = history or []
-            chain = load_chain()
+            # print(history)
+            chat = load_chain()
+
+            messages = [
+                SystemMessage(
+                    content="You are a helpful assistant."),
+            ]
+            for h in history:
+                messages += [HumanMessage(content=h[0])]
+                messages += [AIMessage(content=h[1])]
+
+            messages += [HumanMessage(content=inp)]
+
+            # print(messages)
 
             # Run chain and append input.
-            output = chain.run(input=inp)
+            output = chat(messages).content
             history.append((inp, output))
         except Exception as e:
             raise e
