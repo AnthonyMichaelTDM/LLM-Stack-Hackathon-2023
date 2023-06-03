@@ -3,3 +3,11 @@
 ## Install dependencies
 
 - `pip install -r requirements.txt`
+
+## Tech Stack
+
+- OpenAI api - llm
+- Qdrant - vector database
+- react
+- pandas
+- ...
