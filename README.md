@@ -20,3 +20,9 @@
 - react
 - pandas
 - ...
+
+
+## Run gradio
+```
+gradio src/langchain_gradio.py
+```
