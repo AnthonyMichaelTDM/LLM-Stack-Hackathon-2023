@@ -43,6 +43,11 @@ class ChatWrapper:
     ) -> Tuple[Any, List[Tuple[str, str]]]:
         """Execute the chat functionality."""
         self.lock.acquire()
+        
+        # check if inp is too big for context window
+        
+        # if so, map reduce it and continue
+        
 
         try:
             history = history or []
@@ -106,6 +111,9 @@ class ChatWrapper:
             print(messages[-1])
 
             messages += [HumanMessage(content=inp)]
+            
+            # check if messages is too big for context window,
+            # if so, map reduce each message that's above a certain threshold
 
             # Run chain and append input.
             output: str = chat(messages).content
