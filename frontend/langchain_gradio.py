@@ -34,7 +34,6 @@ class ChatWrapper:
         self.lock.acquire()
         try:
             history = history or []
-            # print(history)
             chat = load_chain()
 
             messages = [
@@ -46,8 +45,6 @@ class ChatWrapper:
                 messages += [AIMessage(content=h[1])]
 
             messages += [HumanMessage(content=inp)]
-
-            # print(messages)
 
             # Run chain and append input.
             output = chat(messages).content
