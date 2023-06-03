@@ -13,6 +13,7 @@
 2. Create the conda environment locally:
 
     ```bash
+    git clone https://github.com/AnthonyMichaelTDM/ LLM-Stack-Hackathon-2023.git
     cd LLM-Stack-Hackathon-2023
     conda env update --prune -f environment.yml
     conda activate llm
@@ -23,7 +24,7 @@
     ```
 
 3. Sign up for an OpenAI account and get an API key [here](https://beta.openai.com/account/api-keys).
-4. Populate a `.env` file with your keys/authtokens in the format of `.env.template`, and reactivate the environment.
+4. Populate a `.env` file with your key in the format of `.env.template`, and reactivate the environment.
 
 ## Install dependencies
 
