@@ -20,8 +20,6 @@ print(hits[0].payload['chat_text'])
 # )
 # print(hits[0].payload['message_text'])
 
-
-
 # Steps:
 # User asks question
 # Embed and find:

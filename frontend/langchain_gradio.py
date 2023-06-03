@@ -12,6 +12,7 @@ from langchain.schema import AIMessage, HumanMessage, SystemMessage
 from qdrant_client import QdrantClient
 from qdrant_client.models import Filter, FieldCondition, Range, ScoredPoint
 
+
 client = QdrantClient(url="http://localhost:6333")
 
 from langchain.schema import BaseMessage, AIMessage, HumanMessage, SystemMessage
@@ -54,13 +55,12 @@ class ChatWrapper:
                 messages += [HumanMessage(content=h[0])]
                 messages += [AIMessage(content=h[1])]
 
-            query_vector: List[float] = OpenAIEmbeddings(client=None).embed_query(inp)
-
             relevant_chats: List[ScoredPoint] = client.search(
                 collection_name="chats",
                 query_vector=query_vector,
                 limit=3,  # Return 5 closest points
             )
+
 
             thread_id = (relevant_chats[0].payload or dict()).get("thread_id")
             
