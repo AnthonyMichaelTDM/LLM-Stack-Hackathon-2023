@@ -10,7 +10,7 @@ from threading import Lock
 from langchain.schema import AIMessage, HumanMessage, SystemMessage
 
 from qdrant_client import QdrantClient
-from qdrant_client.models import Filter, FieldCondition, Range, ScoredPoint
+from qdrant_client.models import Filter, FieldCondition, Range, ScoredPoint, MatchValue
 
 
 client = QdrantClient(url="http://localhost:6333")
@@ -56,16 +56,15 @@ class ChatWrapper:
                 messages += [AIMessage(content=h[1])]
 
             query_vector = OpenAIEmbeddings().embed_query(inp)
-            
+
             relevant_chats: List[ScoredPoint] = client.search(
                 collection_name="chats",
                 query_vector=query_vector,
                 limit=3,  # Return 5 closest points
             )
 
-
             thread_id = relevant_chats[0].payload["thread_id"]
-            
+
             relevant_chats_text = [
                 relevant_chats[i].payload["chat_text"]
                 for i in range(len(relevant_chats))
@@ -78,7 +77,7 @@ class ChatWrapper:
                     must_not=[  # These conditions are required for search results
                         FieldCondition(
                             key="thread_id",  # Condition based on values of `rand_number` field.
-                            match=thread_id,
+                            match=MatchValue(value=thread_id),
                         )
                     ]
                 ),
@@ -95,13 +94,15 @@ class ChatWrapper:
             [CONTEXT] Here is some context for the question.
             [RELEVANT THREAD]
             """
-                    + "\n".join([ text or "" for text in relevant_chats_text])
+                    + "\n".join([text or "" for text in relevant_chats_text])
                     + """
             [RELEVANT MESSAGES]
             """
-                    + "\n".join([ text or "" for text in relevant_messages_text])
+                    + "\n".join([text or "" for text in relevant_messages_text])
                 )
             ]
+
+            print(messages[-1])
 
             messages += [HumanMessage(content=inp)]
 
