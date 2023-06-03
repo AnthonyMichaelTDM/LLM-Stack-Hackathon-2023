@@ -14,19 +14,17 @@ from qdrant_client.models import Filter, FieldCondition, Range
 
 client = QdrantClient(url="http://localhost:6333")
 
-from langchain.schema import (
-    BaseMessage,
-    AIMessage,
-    HumanMessage,
-    SystemMessage
-)
+from langchain.schema import BaseMessage, AIMessage, HumanMessage, SystemMessage
 from dotenv import load_dotenv
 
 load_dotenv()
 
+
 def load_chain() -> ChatOpenAI:
     """Logic for loading the chain you want to use should go here."""
-    llm = ChatOpenAI(temperature=0, model='gpt-4', openai_organization=os.getenv('OPENAI_ORG_ID'), client=None)
+    llm = ChatOpenAI(
+        temperature=0, model="gpt-4"
+    )  # openai_organization=os.getenv('OPENAI_ORG_ID'), client=None
     # chain = ConversationChain(llm=llm)
     return llm
 
@@ -36,31 +34,34 @@ class ChatWrapper:
         self.lock = Lock()
 
     def __call__(
-        self, inp: str, history: Optional[List[Tuple[str, str]]], chain: Optional[ConversationChain]
+        self,
+        inp: str,
+        history: Optional[List[Tuple[str, str]]],
+        chain: Optional[ConversationChain],
     ) -> Tuple[Any, List[Tuple[str, str]]]:
         """Execute the chat functionality."""
         self.lock.acquire()
-        
+
         try:
             history = history or []
             # print(history)
             chat = load_chain()
 
             messages: list[BaseMessage] = [
-                SystemMessage(
-                    content="You are a helpful assistant."),
+                SystemMessage(content="You are a helpful assistant."),
             ]
             for h in history:
                 messages += [HumanMessage(content=h[0])]
                 messages += [AIMessage(content=h[1])]
 
-            query_vector = OpenAIEmbeddings().embed(inp)
+            query_vector = OpenAIEmbeddings().embed_query(inp)
 
             relevant_chats = client.search(
                 collection_name="chats",
                 query_vector=query_vector,
                 limit=3,  # Return 5 closest points
             )
+
             thread_id = relevant_chats["result"][0]["payload"]["thread_id"]
             relevant_chats_text = [
                 relevant_chats["result"][0]["payload"]["chat_text"]
