@@ -30,6 +30,10 @@
 
 - `pip freeze > requirements.txt`
 
+## Run Qdrant Instance
+
+- `docker run -p 6333:6333 qdrant/qdrant:latest`
+
 ## Tech Stack
 
 - OpenAI api - llm
