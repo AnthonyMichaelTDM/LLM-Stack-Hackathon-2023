@@ -1,6 +1,7 @@
 import os
 from typing import Any, List, Optional, Self, Tuple
 
+from dotenv import load_dotenv
 import gradio as gr
 from langchain.chains import ConversationChain
 from langchain.llms import OpenAI, Anthropic, Cohere
@@ -12,8 +13,9 @@ from langchain.schema import AIMessage, HumanMessage, SystemMessage
 from qdrant_client import QdrantClient
 from qdrant_client.models import Filter, FieldCondition, Range, ScoredPoint, MatchValue
 
+load_dotenv()
 
-client = QdrantClient(url="http://localhost:6333")
+client = QdrantClient(url=os.getenv("QDRANT_URL"))
 
 from langchain.schema import BaseMessage, AIMessage, HumanMessage, SystemMessage
 from dotenv import load_dotenv
