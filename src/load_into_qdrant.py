@@ -7,7 +7,7 @@ from qdrant_client.models import Distance, PointStruct, VectorParams
 import uuid
 
 
-client = QdrantClient(url="http://localhost:6334")
+client = QdrantClient(url="http://localhost:6333")
 chat_collection = "chats"
 message_collection = "messages"
 data_path = "./data/"

@@ -13,12 +13,12 @@ hits = client.search(
 )
 print(hits)
 
-hits = client.search(
-    collection_name="messages",
-    query_vector=query_vector,
-    limit=5,  # Return 5 closest points
-)
-print(hits)
+# hits = client.search(
+#     collection_name="messages",
+#     query_vector=query_vector,
+#     limit=5,  # Return 5 closest points
+# )
+# print(hits)
 
 
 # Steps:
