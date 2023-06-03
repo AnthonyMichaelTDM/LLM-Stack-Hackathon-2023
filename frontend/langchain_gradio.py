@@ -23,9 +23,8 @@ load_dotenv()
 def load_chain() -> ChatOpenAI:
     """Logic for loading the chain you want to use should go here."""
     llm = ChatOpenAI(
-        temperature=0, model="gpt-4",
-        openai_organization=os.getenv('OPENAI_ORG_ID'), client=None
-    )
+        temperature=0, model="gpt-4"
+    )  # openai_organization=os.getenv('OPENAI_ORG_ID'), client=None
     # chain = ConversationChain(llm=llm)
     return llm
 
