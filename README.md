@@ -34,5 +34,12 @@
 
 - OpenAI api - llm
 - Qdrant - vector database
-- pandas/tqdm - data exploration
-- react - frontend
+- react
+- pandas
+- ...
+
+
+## Run gradio
+```
+gradio src/langchain_gradio.py
+```
