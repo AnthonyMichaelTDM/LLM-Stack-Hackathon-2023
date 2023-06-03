@@ -2,5 +2,3 @@ data/raw/*
 data/embeddings/*
 env/*
 .env
-__pycache__
-.vscode
