@@ -55,6 +55,8 @@ class ChatWrapper:
                 messages += [HumanMessage(content=h[0])]
                 messages += [AIMessage(content=h[1])]
 
+            query_vector = OpenAIEmbeddings().embed_query(inp)
+            
             relevant_chats: List[ScoredPoint] = client.search(
                 collection_name="chats",
                 query_vector=query_vector,
