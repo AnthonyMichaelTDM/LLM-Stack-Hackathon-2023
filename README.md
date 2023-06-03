@@ -42,8 +42,8 @@
 - pandas
 - ...
 
-
 ## Run gradio
-```
+
+```sh
 gradio frontend/langchain_gradio.py
 ```

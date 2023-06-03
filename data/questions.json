@@ -1,0 +1,12 @@
+[
+  "What are some examples of ML tooling companies with good documentation?",
+  "What are the opinions of MLOps.community Slack channel members on TensorFlow Extended (TFX) for model development and productionization and how does it compare to other options?",
+  "What are the best practices for batch model & online prediction architecture, and what approach should be used for scalable API?",
+  "How do people manage different versioning schemes on their inference services?",
+  "How do you determine whether or not you are able to reproduce models?",
+  "What were the best MLOps conferences/events attended this year and why?",
+  "What are the challenges faced and recommendations for alternatives for building an end-to-end MLOps engine with Kubeflow and AWS?",
+  "Are there any published benchmarks for the compute (cpu/gpu) needed by trained models in production such as spacy, mt5, and bert?",
+  "When deploying Tensorflow models, is there a reason not to convert to TFLite and use their runtime? Is it faster even if not using edge devices?",
+  "What are the best practices for version controlling Jupyter Notebooks?"
+]
