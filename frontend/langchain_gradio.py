@@ -1,16 +1,15 @@
-import os
-from typing import Any, List, Optional, Self, Tuple
+#import os
+from typing import Any, List, Optional, Tuple
 
 import gradio as gr
 from langchain.chains import ConversationChain
-from langchain.llms import OpenAI, Anthropic, Cohere
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.chat_models import ChatOpenAI
 from threading import Lock
 from langchain.schema import AIMessage, HumanMessage, SystemMessage
 
 from qdrant_client import QdrantClient
-from qdrant_client.models import Filter, FieldCondition, Range, ScoredPoint, MatchValue
+from qdrant_client.models import Filter, FieldCondition, ScoredPoint, MatchValue
 
 
 client = QdrantClient(url="http://localhost:6333")

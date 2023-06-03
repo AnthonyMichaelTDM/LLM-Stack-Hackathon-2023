@@ -2,7 +2,6 @@ from langchain.llms import OpenAI
 from langchain.chat_models import ChatOpenAI
 from dotenv import load_dotenv
 from langchain.schema import (
-    AIMessage,
     HumanMessage,
     SystemMessage
 )
@@ -10,7 +9,6 @@ from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.vectorstores import Qdrant
 from langchain.document_loaders import TextLoader
-import gradio as gr
 
 load_dotenv()
 
