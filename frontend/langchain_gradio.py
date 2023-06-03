@@ -61,6 +61,7 @@ class ChatWrapper:
                 limit=3,  # Return 5 closest points
             )
 
+            query_vector = OpenAIEmbeddings().embed_query(inp)
 
             thread_id = (relevant_chats[0].payload or dict()).get("thread_id")
             
