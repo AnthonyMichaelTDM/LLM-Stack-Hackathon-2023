@@ -1,4 +1,4 @@
-#import os
+import os
 from typing import Any, List, Optional, Tuple
 
 from dotenv import load_dotenv
@@ -21,8 +21,10 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+NUM_THEADS = 3
+NUM_MESSAGES = 5
 
-def load_chain() -> ChatOpenAI:
+def load_qa_chain() -> ChatOpenAI:
     """Logic for loading the chain you want to use should go here."""
     llm = ChatOpenAI(
         temperature=0, model="gpt-4"
@@ -30,6 +32,13 @@ def load_chain() -> ChatOpenAI:
     # chain = ConversationChain(llm=llm)
     return llm
 
+def load_sum_chain() -> ChatOpenAI:
+    """Logic for loading the chain you want to use should go here."""
+    llm = ChatOpenAI(
+        temperature=0, model="gpt-3.5-turbo"
+    )  # openai_organization=os.getenv('OPENAI_ORG_ID'), client=None
+    # chain = ConversationChain(llm=llm)
+    return llm
 
 class ChatWrapper:
     def __init__(self) -> None:
@@ -39,20 +48,14 @@ class ChatWrapper:
         self,
         inp: str,
         history: Optional[List[Tuple[str, str]]],
-        chain: Optional[ConversationChain],
     ) -> Tuple[Any, List[Tuple[str, str]]]:
         """Execute the chat functionality."""
         self.lock.acquire()
         
-        # check if inp is too big for context window
-        
-        # if so, map reduce it and continue
-        
-
         try:
             history = history or []
-            # print(history)
-            chat = load_chain()
+            summarize = load_sum_chain()
+            chat = load_qa_chain()
 
             messages: list[BaseMessage] = [
                 SystemMessage(content="You are a helpful assistant."),
@@ -66,7 +69,7 @@ class ChatWrapper:
             relevant_chats: List[ScoredPoint] = client.search(
                 collection_name="chats",
                 query_vector=query_vector,
-                limit=3,  # Return 5 closest points
+                limit=NUM_THEADS,
             )
 
             thread_id = relevant_chats[0].payload["thread_id"]
@@ -87,7 +90,7 @@ class ChatWrapper:
                         )
                     ]
                 ),
-                limit=5,  # Return 5 closest points
+                limit=NUM_MESSAGES,
             )
             relevant_messages_text = [
                 relevant_messages[i].payload["message_text"]
@@ -98,7 +101,7 @@ class ChatWrapper:
                 AIMessage(
                     content="""
             [CONTEXT] Here is some context for the question.
-            [RELEVANT THREAD]
+            [RELEVANT MESSAGE THREADS]
             """
                     + "\n".join([text or "" for text in relevant_chats_text])
                     + """
@@ -107,8 +110,6 @@ class ChatWrapper:
                     + "\n".join([text or "" for text in relevant_messages_text])
                 )
             ]
-
-            print(messages[-1])
 
             messages += [HumanMessage(content=inp)]
             
