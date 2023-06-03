@@ -10,7 +10,8 @@ from threading import Lock
 from langchain.schema import AIMessage, HumanMessage, SystemMessage
 
 from qdrant_client import QdrantClient
-from qdrant_client.models import Filter, FieldCondition, Range
+from qdrant_client.models import Filter, FieldCondition, Range, ScoredPoint
+
 
 client = QdrantClient(url="http://localhost:6333")
 
@@ -54,18 +55,18 @@ class ChatWrapper:
                 messages += [HumanMessage(content=h[0])]
                 messages += [AIMessage(content=h[1])]
 
-            query_vector = OpenAIEmbeddings().embed_query(inp)
-
-            relevant_chats = client.search(
+            relevant_chats: List[ScoredPoint] = client.search(
                 collection_name="chats",
                 query_vector=query_vector,
                 limit=3,  # Return 5 closest points
             )
 
-            thread_id = relevant_chats["result"][0]["payload"]["thread_id"]
+
+            thread_id = (relevant_chats[0].payload or dict()).get("thread_id")
+            
             relevant_chats_text = [
-                relevant_chats["result"][0]["payload"]["chat_text"]
-                for _ in range(len(relevant_chats))
+                (relevant_chats[i].payload or dict()).get("chat_text")
+                for i in range(len(relevant_chats))
             ]
 
             relevant_messages = client.search(
@@ -82,8 +83,8 @@ class ChatWrapper:
                 limit=5,  # Return 5 closest points
             )
             relevant_messages_text = [
-                relevant_messages["result"][0]["payload"]["message_text"]
-                for _ in range(len(relevant_messages))
+                (relevant_messages[i].payload or dict()).get("message_text")
+                for i in range(len(relevant_messages))
             ]
 
             messages += [
@@ -92,11 +93,11 @@ class ChatWrapper:
             [CONTEXT] Here is some context for the question.
             [RELEVANT THREAD]
             """
-                    + "\n".join(relevant_chats_text)
+                    + "\n".join([ text or "" for text in relevant_chats_text])
                     + """
             [RELEVANT MESSAGES]
             """
-                    + "\n".join(relevant_messages_text)
+                    + "\n".join([ text or "" for text in relevant_messages_text])
                 )
             ]
 

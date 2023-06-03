@@ -11,15 +11,14 @@ hits = client.search(
     query_vector=query_vector,
     limit=5,  # Return 5 closest points
 )
-print(hits)
+print(hits[0].payload['chat_text'])
 
 # hits = client.search(
 #     collection_name="messages",
 #     query_vector=query_vector,
 #     limit=5,  # Return 5 closest points
 # )
-# print(hits)
-
+# print(hits[0].payload['message_text'])
 
 # Steps:
 # User asks question
