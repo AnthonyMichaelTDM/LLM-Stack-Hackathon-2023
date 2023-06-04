@@ -1,4 +1,4 @@
-name: llm
+name: serverchat
 channels:
   - defaults
   - conda-forge
