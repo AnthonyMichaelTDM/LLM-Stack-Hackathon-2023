@@ -26,7 +26,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-NUM_THEADS = 3
+NUM_THEADS = 1
 NUM_MESSAGES = 5
 
 

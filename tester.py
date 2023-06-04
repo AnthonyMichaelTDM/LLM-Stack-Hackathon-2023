@@ -119,7 +119,7 @@ import pandas as pd
 def test_all_questions():
     data = pd.read_csv("data/questions_list.csv")
     
-    data["answers"] = data["answers"].apply(qa)
+    data["answer"] = data["answer"].apply(qa)
     
     data.to_csv("data/questions_with_answers.csv")
     
