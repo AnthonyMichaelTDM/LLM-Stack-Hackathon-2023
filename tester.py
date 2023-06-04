@@ -28,7 +28,7 @@ NUM_MESSAGES = 5
 def qa(inp:str) -> str:
     # summarize = load_sum_chain()
     chat = ChatOpenAI(
-        temperature=0, model="gpt-4"
+        temperature=0, model="gpt-3.5-turbo"
     )  # openai_organization=os.getenv('OPENAI_ORG_ID'), client=None
 
     messages: list[BaseMessage] = [
@@ -123,7 +123,7 @@ def qa(inp:str) -> str:
     return output
 
 def test_all_questions():
-    data = pd.read_csv("data/questions.csv")
+    data = pd.read_csv("data/questions_list.csv")
     
     data["answer"] = data["question"].apply(qa)
     
@@ -131,3 +131,6 @@ def test_all_questions():
     
 def __main__():
     test_all_questions()
+
+if __main__():
+    __main__()
