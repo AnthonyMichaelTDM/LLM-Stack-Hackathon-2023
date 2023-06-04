@@ -26,7 +26,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-NUM_THEADS = 3
+NUM_THEADS = 1
 NUM_MESSAGES = 5
 
 
@@ -38,23 +38,28 @@ def load_qa_chain() -> ChatOpenAI:
     # chain = ConversationChain(llm=llm)
     return llm
 
-def load_sum_chain():
-    """Logic for loading the chain you want to use should go here."""
-    # base llm
-    map_prompt = PromptTemplate(
-        template = """You are a bot for summarizing wikipedia articles, you are terse and focus on accuracy.\n\nSummarize this text:\n{input}""",
-        input_variables=["input"]
-    )
-    combine_prompt=PromptTemplate(
-        template = """You are a diligent bot that summarizes text.\n\nPlease combine the articles below into one summary:\n{input}""",
-        input_variables=["input"]
-    )
-    
-    summarize = load_summarize_chain(llm=OpenAI(
-            model="gpt-3.5-turbo"
-        ),chain_type="map_reduce", verbose=False, map_prompt=map_prompt, combine_prompt=combine_prompt)
-    
-    return summarize
+
+# def load_sum_chain():
+#     """Logic for loading the chain you want to use should go here."""
+#     # base llm
+#     map_prompt = PromptTemplate(
+#         template="""You are a bot for summarizing wikipedia articles, you are terse and focus on accuracy.\n\nSummarize this text:\n{input}""",
+#         input_variables=["input"],
+#     )
+#     combine_prompt = PromptTemplate(
+#         template="""You are a diligent bot that summarizes text.\n\nPlease combine the articles below into one summary:\n{input}""",
+#         input_variables=["input"],
+#     )
+
+#     summarize = load_summarize_chain(
+#         llm=OpenAI(model="gpt-3.5-turbo"),
+#         chain_type="map_reduce",
+#         verbose=False,
+#         map_prompt=map_prompt,
+#         combine_prompt=combine_prompt,
+#     )
+
+#     return summarize
 
 
 class ChatWrapper:
@@ -71,11 +76,21 @@ class ChatWrapper:
 
         try:
             history = history or []
-            summarize = load_sum_chain()
+            # summarize = load_sum_chain()
             chat = load_qa_chain()
 
             messages: list[BaseMessage] = [
-                SystemMessage(content="You are a helpful assistant."),
+                SystemMessage(
+                    content="""
+                You are a kind, helpful, knowledgable chatbot that specializes in answering questions about machine learning. Sometimes, we will provide you with the relevant context to answer the question. 
+
+                This is a question-answering system over a corpus of chats from the MLOps Community, a group of machine learning enthusiasts.
+                Given multiple message threads, messages, and a question, create an answer to the question that references those chats as "SOURCES" citing the channel name and message. Avoid any channel or user ids.
+
+                - If the question asks about the system's capabilities, the system should respond with some version of "This system can answer questions about machine learning from the MLOps Slack community.”. The answer does not need to include sources.
+                - If the answer cannot be determined from the message threads or from these instructions, the system should not answer the question. The system should instead return "No relevant sources found" and ask for clarification.
+                - Sources are not guaranteed to be relevant to the question."""
+                ),
             ]
             for h in history:
                 messages += [HumanMessage(content=h[0])]
@@ -198,7 +213,7 @@ with block:
     state = gr.State()
     agent_state = gr.State()
 
-    submit.click(chat, inputs=[message, state, agent_state], outputs=[chatbot, state])
-    message.submit(chat, inputs=[message, state, agent_state], outputs=[chatbot, state])
+    submit.click(chat, inputs=[message, state], outputs=[chatbot, state])
+    message.submit(chat, inputs=[message, state], outputs=[chatbot, state])
 
 block.launch(debug=True)
