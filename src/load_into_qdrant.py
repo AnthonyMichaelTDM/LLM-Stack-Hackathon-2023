@@ -26,9 +26,9 @@ chats_embeddings_df = pd.read_csv(embeddings_path + "chats-embeddings-ada-002.cs
 messages_df = pd.read_csv(raw_path + "messages.csv")
 messages_df_select = messages_df[
     (messages_df["Channel_Name"] == "mlops-questions-answered")
-    & (messages_df["Channel_Name"] == "discussions")
+    | (messages_df["Channel_Name"] == "discussions")
 ]
-message_embeddings_df = pd.read_csv(
+messages_embeddings_df = pd.read_csv(
     embeddings_path + "messages-embeddings-ada-002-001.csv"
 )
 
@@ -39,26 +39,43 @@ missing_chat_embeddings_df = chats_embeddings_df[
 ]
 missing_chat_embeddings_df_ids = missing_chat_embeddings_df["thread_id"].tolist()
 chats_df_select = chats_df[~chats_df["thread_id"].isin(missing_chat_embeddings_df_ids)]
-chats_embeddings_df = chats_embeddings_df[
-    ~chats_embeddings_df["thread_id"].isin(missing_chat_embeddings_df_ids)
+
+chats_embeddings_df_ids = chats_embeddings_df["thread_id"].tolist()
+chats_df_select = chats_df_select[
+    chats_df_select["thread_id"].isin(chats_embeddings_df_ids)
 ]
+chat_df_select_ids = chats_df_select["thread_id"].tolist()
+chats_embeddings_df = chats_embeddings_df[
+    chats_embeddings_df["thread_id"].isin(chat_df_select_ids)
+]
+chats_df_select = chats_df_select.reset_index(drop=True)
+chats_embeddings_df = chats_embeddings_df.reset_index(drop=True)
+
 
 # Remove all messages that don't have embeddings
-missing_message_embeddings_df = message_embeddings_df[
-    message_embeddings_df["embedding"].isna()
+missing_messages_embeddings_df = messages_embeddings_df[
+    messages_embeddings_df["embedding"].isna()
 ]
-missing_message_embeddings_df_ids = missing_message_embeddings_df["message_id"].tolist()
+missing_messages_embeddings_df_ids = missing_messages_embeddings_df["message_id"].tolist()
 messages_df_select = messages_df_select[
-    ~messages_df_select["Message_Timestamp"].isin(missing_message_embeddings_df_ids)
+    ~messages_df_select["Message_Timestamp"].isin(missing_messages_embeddings_df_ids)
+]
+
+messages_embeddings_df_ids = messages_embeddings_df["message_id"].tolist()
+messages_df_select = messages_df_select[
+    messages_df_select["Message_Timestamp"].isin(messages_embeddings_df_ids)
 ]
 messages_df_select_ids = messages_df_select["Message_Timestamp"].tolist()
-message_embeddings_df = message_embeddings_df[
-    message_embeddings_df["message_id"].isin(messages_df_select_ids)
+messages_embeddings_df = messages_embeddings_df[
+    messages_embeddings_df["message_id"].isin(messages_df_select_ids)
 ]
+messages_df_select = messages_df_select.reset_index(drop=True)
+messages_embeddings_df = messages_embeddings_df.reset_index(drop=True)
+
 
 # Create two qdrant collections for the chats + messages
 chat_embedding_size = len(json.loads(chats_embeddings_df["embedding"][0]))
-message_embedding_size = len(json.loads(message_embeddings_df["embedding"][0]))
+message_embedding_size = len(json.loads(messages_embeddings_df["embedding"][0]))
 
 client.recreate_collection(
     collection_name=chat_collection,
@@ -81,14 +98,18 @@ for i in range(
                 vector=json.loads(vector),
                 payload={
                     "thread_id": thread_id,
+                    "channel_name": channel_name,
                     "chat_text": chat_text,
                 },
             )
-            for vector, thread_id, chat_text in zip(
+            for vector, thread_id, channel_name, chat_text in zip(
                 chats_embeddings_df["embedding"][
                     i * max_batch_size : (i + 1) * max_batch_size
                 ],
                 chats_embeddings_df["thread_id"][
+                    i * max_batch_size : (i + 1) * max_batch_size
+                ],
+                chats_df_select["channel_name"][
                     i * max_batch_size : (i + 1) * max_batch_size
                 ],
                 chats_df_select["chat_text"][
@@ -98,7 +119,7 @@ for i in range(
         ],
     )
 for i in range(
-    math.ceil(len(message_embeddings_df) / max_batch_size)
+    math.ceil(len(messages_embeddings_df) / max_batch_size)
 ):  # Upsert chats in batches
     client.upsert(
         collection_name=message_collection,
@@ -108,14 +129,18 @@ for i in range(
                 vector=json.loads(vector),
                 payload={
                     "thread_id": thread_id,
+                    "channel_name": channel_name,
                     "message_text": message_text,
                 },
             )
-            for vector, thread_id, message_text in zip(
-                message_embeddings_df["embedding"][
+            for vector, thread_id, channel_name, message_text in zip(
+                messages_embeddings_df["embedding"][
                     i * max_batch_size : (i + 1) * max_batch_size
                 ],
                 messages_df_select["Thread_Timstamp"][
+                    i * max_batch_size : (i + 1) * max_batch_size
+                ],
+                messages_df_select["Channel_Name"][
                     i * max_batch_size : (i + 1) * max_batch_size
                 ],
                 messages_df_select["__Text"][

@@ -24,6 +24,7 @@ load_dotenv()
 NUM_THEADS = 3
 NUM_MESSAGES = 5
 
+
 def load_qa_chain() -> ChatOpenAI:
     """Logic for loading the chain you want to use should go here."""
     llm = ChatOpenAI(
@@ -32,6 +33,7 @@ def load_qa_chain() -> ChatOpenAI:
     # chain = ConversationChain(llm=llm)
     return llm
 
+
 def load_sum_chain() -> ChatOpenAI:
     """Logic for loading the chain you want to use should go here."""
     llm = ChatOpenAI(
@@ -39,6 +41,7 @@ def load_sum_chain() -> ChatOpenAI:
     )  # openai_organization=os.getenv('OPENAI_ORG_ID'), client=None
     # chain = ConversationChain(llm=llm)
     return llm
+
 
 class ChatWrapper:
     def __init__(self) -> None:
@@ -51,7 +54,7 @@ class ChatWrapper:
     ) -> Tuple[Any, List[Tuple[str, str]]]:
         """Execute the chat functionality."""
         self.lock.acquire()
-        
+
         try:
             history = history or []
             summarize = load_sum_chain()
@@ -71,9 +74,11 @@ class ChatWrapper:
                 query_vector=query_vector,
                 limit=NUM_THEADS,
             )
-
             thread_id = relevant_chats[0].payload["thread_id"]
-
+            relevant_chats_channel_names = [
+                relevant_chats[i].payload["channel_name"]
+                for i in range(len(relevant_chats))
+            ]
             relevant_chats_text = [
                 relevant_chats[i].payload["chat_text"]
                 for i in range(len(relevant_chats))
@@ -92,6 +97,10 @@ class ChatWrapper:
                 ),
                 limit=NUM_MESSAGES,
             )
+            relevant_messages_channel_names = [
+                relevant_messages[i].payload["channel_name"]
+                for i in range(len(relevant_messages))
+            ]
             relevant_messages_text = [
                 relevant_messages[i].payload["message_text"]
                 for i in range(len(relevant_messages))
@@ -103,16 +112,30 @@ class ChatWrapper:
             [CONTEXT] Here is some context for the question.
             [RELEVANT MESSAGE THREADS]
             """
-                    + "\n".join([text or "" for text in relevant_chats_text])
+                    + "\n\n\n\n\n".join(
+                        [
+                            "From channel: " + channel_name + "\n" + text
+                            for channel_name, text in zip(
+                                relevant_chats_channel_names, relevant_chats_text
+                            )
+                        ]
+                    )
                     + """
             [RELEVANT MESSAGES]
             """
-                    + "\n".join([text or "" for text in relevant_messages_text])
+                    + "\n\n\n\n\n".join(
+                        [
+                            "From channel: " + channel_name + "\n" + text
+                            for channel_name, text in zip(
+                                relevant_messages_channel_names, relevant_messages_text
+                            )
+                        ]
+                    )
                 )
             ]
 
             messages += [HumanMessage(content=inp)]
-            
+
             # check if messages is too big for context window,
             # if so, map reduce each message that's above a certain threshold
 
