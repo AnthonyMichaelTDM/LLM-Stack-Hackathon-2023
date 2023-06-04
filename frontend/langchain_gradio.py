@@ -1,9 +1,14 @@
-#import os
+import os
 from typing import Any, List, Optional, Tuple
 
 from dotenv import load_dotenv
 import gradio as gr
-from langchain.chains import ConversationChain
+from langchain import OpenAI, LLMChain, PromptTemplate
+from langchain.chains import MapReduceChain
+from langchain.text_splitter import TextSplitter
+from langchain.chains.summarize import load_summarize_chain
+from langchain.chains.combine_documents.map_reduce import MapReduceDocumentsChain
+from langchain.chains.combine_documents.base import BaseCombineDocumentsChain
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.chat_models import ChatOpenAI
 from threading import Lock
@@ -21,14 +26,35 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+NUM_THEADS = 3
+NUM_MESSAGES = 5
 
-def load_chain() -> ChatOpenAI:
+
+def load_qa_chain() -> ChatOpenAI:
     """Logic for loading the chain you want to use should go here."""
     llm = ChatOpenAI(
         temperature=0, model="gpt-4"
     )  # openai_organization=os.getenv('OPENAI_ORG_ID'), client=None
     # chain = ConversationChain(llm=llm)
     return llm
+
+def load_sum_chain():
+    """Logic for loading the chain you want to use should go here."""
+    # base llm
+    map_prompt = PromptTemplate(
+        template = """You are a bot for summarizing wikipedia articles, you are terse and focus on accuracy.\n\nSummarize this text:\n{input}""",
+        input_variables=["input"]
+    )
+    combine_prompt=PromptTemplate(
+        template = """You are a diligent bot that summarizes text.\n\nPlease combine the articles below into one summary:\n{input}""",
+        input_variables=["input"]
+    )
+    
+    summarize = load_summarize_chain(llm=OpenAI(
+            model="gpt-3.5-turbo"
+        ),chain_type="map_reduce", verbose=False, map_prompt=map_prompt, combine_prompt=combine_prompt)
+    
+    return summarize
 
 
 class ChatWrapper:
@@ -39,15 +65,14 @@ class ChatWrapper:
         self,
         inp: str,
         history: Optional[List[Tuple[str, str]]],
-        chain: Optional[ConversationChain],
     ) -> Tuple[Any, List[Tuple[str, str]]]:
         """Execute the chat functionality."""
         self.lock.acquire()
 
         try:
             history = history or []
-            # print(history)
-            chat = load_chain()
+            summarize = load_sum_chain()
+            chat = load_qa_chain()
 
             messages: list[BaseMessage] = [
                 SystemMessage(content="You are a helpful assistant."),
@@ -61,11 +86,13 @@ class ChatWrapper:
             relevant_chats: List[ScoredPoint] = client.search(
                 collection_name="chats",
                 query_vector=query_vector,
-                limit=3,  # Return 5 closest points
+                limit=NUM_THEADS,
             )
-
             thread_id = relevant_chats[0].payload["thread_id"]
-
+            relevant_chats_channel_names = [
+                relevant_chats[i].payload["channel_name"]
+                for i in range(len(relevant_chats))
+            ]
             relevant_chats_text = [
                 relevant_chats[i].payload["chat_text"]
                 for i in range(len(relevant_chats))
@@ -82,8 +109,12 @@ class ChatWrapper:
                         )
                     ]
                 ),
-                limit=5,  # Return 5 closest points
+                limit=NUM_MESSAGES,
             )
+            relevant_messages_channel_names = [
+                relevant_messages[i].payload["channel_name"]
+                for i in range(len(relevant_messages))
+            ]
             relevant_messages_text = [
                 relevant_messages[i].payload["message_text"]
                 for i in range(len(relevant_messages))
@@ -93,19 +124,34 @@ class ChatWrapper:
                 AIMessage(
                     content="""
             [CONTEXT] Here is some context for the question.
-            [RELEVANT THREAD]
+            [RELEVANT MESSAGE THREADS]
             """
-                    + "\n".join([text or "" for text in relevant_chats_text])
+                    + "\n\n\n\n\n".join(
+                        [
+                            "From channel: " + channel_name + "\n" + text
+                            for channel_name, text in zip(
+                                relevant_chats_channel_names, relevant_chats_text
+                            )
+                        ]
+                    )
                     + """
             [RELEVANT MESSAGES]
             """
-                    + "\n".join([text or "" for text in relevant_messages_text])
+                    + "\n\n\n\n\n".join(
+                        [
+                            "From channel: " + channel_name + "\n" + text
+                            for channel_name, text in zip(
+                                relevant_messages_channel_names, relevant_messages_text
+                            )
+                        ]
+                    )
                 )
             ]
 
-            print(messages[-1])
-
             messages += [HumanMessage(content=inp)]
+
+            # check if messages is too big for context window,
+            # if so, map reduce each message that's above a certain threshold
 
             # Run chain and append input.
             output: str = chat(messages).content
