@@ -1,18 +1,9 @@
 import os
-from typing import Any, List, Optional, Tuple
+from typing import List
 
-import pandas as pd
 from dotenv import load_dotenv
-import gradio as gr
-from langchain import OpenAI, LLMChain, PromptTemplate
-from langchain.chains import MapReduceChain
-from langchain.text_splitter import TextSplitter
-from langchain.chains.summarize import load_summarize_chain
-from langchain.chains.combine_documents.map_reduce import MapReduceDocumentsChain
-from langchain.chains.combine_documents.base import BaseCombineDocumentsChain
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.chat_models import ChatOpenAI
-from threading import Lock
 from langchain.schema import AIMessage, HumanMessage, SystemMessage
 from qdrant_client import QdrantClient
 from qdrant_client.models import Filter, FieldCondition, ScoredPoint, MatchValue
@@ -122,11 +113,19 @@ def qa(inp:str) -> str:
 
     return output
 
+import numpy as np
+import pandas as pd
+from multiprocessing import Pool
+
+NUM_CORES = 8
+
 def test_all_questions():
     data = pd.read_csv("data/questions_list.csv")
+    pool = Pool(NUM_CORES)
+    df_split = np.array_split(data, NUM_CORES)
     
-    data["answer"] = data["question"].apply(qa)
-    
+    data = pd.concat(pool.map(lambda x: x["answer"].apply(qa), df_split))
+        
     data.to_csv("data/questions_with_answers.csv")
     
 def __main__():
