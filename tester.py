@@ -115,25 +115,12 @@ def qa(inp:str) -> str:
 
 import numpy as np
 import pandas as pd
-from multiprocessing import Pool
-
-NUM_CORES = 8
-
-def gen_answers( df: pd.DataFrame) -> pd.DataFrame:
-    df["answers"] = df["answer"].apply(qa)
-    
-    return df
 
 def test_all_questions():
     data = pd.read_csv("data/questions_list.csv")
-    pool = Pool(NUM_CORES)
-    df_split = np.array_split(data, NUM_CORES)
     
-    data = pd.concat(pool.map(gen_answers, df_split))
+    data["answers"] = data["answers"].apply(qa)
     
-    pool.close()
-    pool.join()
-        
     data.to_csv("data/questions_with_answers.csv")
     
 def __main__():
