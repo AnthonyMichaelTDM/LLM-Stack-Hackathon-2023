@@ -1,4 +1,4 @@
-name: serverchat
+name: cachechat
 channels:
   - defaults
   - conda-forge
