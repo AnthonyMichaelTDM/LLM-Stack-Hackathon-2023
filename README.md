@@ -50,10 +50,6 @@ Chat about your data, production-grade style.
    docker run -p 6333:6333 qdrant/qdrant:latest
    ```
 
-# Getting Started with Create React App
-
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
-
 ## Available Scripts
 
 In the project directory, you can run:
