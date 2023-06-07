@@ -3,37 +3,21 @@
   background-color: #282c34;
   color: white;
   font-size: calc(10px + 2vmin);
+  min-height: 100vh;
 }
 
 .App a {
   color: #61dafb;
 }
 
-.Header {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-.FileUploader {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-.UrlUploader {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
+.App,
+.Header,
+.FileUploader,
+.UrlUploader,
 .ChatBox {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 1rem;
 }

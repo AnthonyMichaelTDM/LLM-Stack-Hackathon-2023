@@ -4,6 +4,8 @@ class FileUploader extends Component {
     render() {
         return (
             <div className="FileUploader">
+                <label htmlFor="fileUploader">Choose file(s):</label>
+                <input type="file" id="fileUploader" name="fileUploader"></input>
             </div>
         )
     }
