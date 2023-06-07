@@ -1,4 +1,4 @@
-# CacheChat-v2
+# CacheChat
 
 Chat about your data, production-grade style.
 
