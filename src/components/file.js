@@ -5,7 +5,7 @@ class FileUploader extends Component {
         return (
             <div className="FileUploader">
                 <label htmlFor="fileUploader">Choose file(s):</label>
-                <input type="file" id="fileUploader" name="fileUploader"></input>
+                <input type="file" id="fileUploader" name="fileUploader" multiple></input>
             </div>
         )
     }
