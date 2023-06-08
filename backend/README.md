@@ -7,15 +7,11 @@ A backend server for the website that implements a /chat endpoint.
 1. Clone the repository:
 
     ```bash
-    git clone https://github.com/andrewhinh/cachechat-v2.git
-    cd momo
+    git clone https://github.com/andrewhinh/cachechat.git
+    cd cachechat
     ```
 
-2. Using `.env.template` as reference, create a `.env` file with your [OpenAI API key](https://beta.openai.com/account/api-keys), and reactivate the conda environment:
-
-    ```bash
-    conda activate serverchat
-    ```
+2. Using `.env.template` as reference, create a `.env` file with your [OpenAI API key](https://beta.openai.com/account/api-keys).
 
 3. Install conda if necessary:
 
