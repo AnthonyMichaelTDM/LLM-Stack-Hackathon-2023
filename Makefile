@@ -17,7 +17,3 @@ pip-tools:
 pip-tools-upgrade:
 	pip install pip-tools==6.13.0 setuptools==68.0.0
 	pip-compile --upgrade requirements/prod.in && pip-compile --upgrade requirements/dev.in
-
-# Lint
-lint:
-	tasks/lint.sh

@@ -5,12 +5,7 @@
     "dockerfile": "dev-gpu.Dockerfile"
   },
 
-  "runArgs": [
-	  "--gpus",
-	  "all"
-  ],
+  "runArgs": ["--gpus", "all"],
 
- "extensions": [
-    "ms-python.python"
-  ]
+  "extensions": ["ms-python.python"]
 }
