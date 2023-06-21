@@ -1,0 +1,11 @@
+{
+  "name": "GPU Development Environment",
+
+  "image": "cachechat/development:latest",
+
+ "extensions": [
+    "ms-python.python"
+  ],
+
+  "postStartCommand": "git config --global --add safe.directory ${containerWorkspaceFolder}"
+}
