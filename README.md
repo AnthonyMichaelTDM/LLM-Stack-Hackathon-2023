@@ -21,9 +21,9 @@ To contribute, check out the [guide](./CONTRIBUTING.md).
    cd cachechat
    ```
 
-2. Using `.env.template` as reference, create a `.env` file that has:
-   a. [OpenAI API key](https://beta.openai.com/account/api-keys)
-   b. JWT secret key (created by running `openssl rand -hex 32`)
+2. Using `.env.template` as reference, create a `.env` file with the following:
+   - [OpenAI API key](https://beta.openai.com/account/api-keys)
+   - JWT secret key (created by running `openssl rand -hex 32`)
 
 3. Install conda if necessary:
 
