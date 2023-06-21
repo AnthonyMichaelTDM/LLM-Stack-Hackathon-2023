@@ -19,7 +19,7 @@ jobs:
         name: Login to DockerHub
         uses: docker/login-action@v2
         with:
-          username: cachechat
+          username: andrewhinh
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
       -
         name: Build and push
