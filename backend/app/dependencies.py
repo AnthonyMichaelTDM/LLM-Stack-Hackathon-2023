@@ -20,21 +20,21 @@ from langchain.prompts import (
 from passlib.context import CryptContext
 from pydantic import BaseModel
 
-JWT_SECRET = os.getenv("JWT_SECRET")  # run `openssl rand -hex 32`
-JWT_ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-
-fake_users_db = {
-    "uuid_gen_id": {
-        "username": "ex",
-        "full_name": "E X",
-        "email": "ex@example.com",
-        "hashed_password": "ex",
+USERS_DB = {
+    "example": {
+        "username": "example",
+        "full_name": "Example Example",
+        "email": "example@example.com",
+        "hashed_password": "$2b$12$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW",
         "disabled": False,
         "conversations": {},
     }
 }
+JWT_SECRET = os.getenv("JWT_SECRET")
+JWT_ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
@@ -71,12 +71,60 @@ class UserInDB(User):
 class ChatRequest(BaseModel):
     """Request model for chat requests."""
 
-    user_id: str
     conversation_id: str
     message: str
 
 
 # Helper fns
+def get_password_hash(password: str) -> str:
+    """
+    Get password hash.
+
+    Parameters
+    ----------
+    password : str
+        Password
+
+    Returns
+    -------
+    str
+        Hashed password
+    """
+    return pwd_context.hash(password)
+
+
+def create_user(username: str, password: str, email: str | None = None, full_name: str | None = None) -> UserInDB:
+    """
+    Create user.
+
+    Parameters
+    ----------
+    username : str
+        Username
+    password : str
+        Password
+    email : str | None, optional
+        Email, by default None
+    full_name : str | None, optional
+        Full name, by default None
+
+    Returns
+    -------
+    UserInDB
+        User
+    """
+    hashed_password = get_password_hash(password)
+    USERS_DB[username] = {
+        "username": username,
+        "full_name": full_name,
+        "email": email,
+        "hashed_password": hashed_password,
+        "disabled": False,
+        "conversations": {},
+    }
+    return authenticate_user(username, password)
+
+
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     """Verify password.
 
@@ -93,23 +141,6 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
         True if password is verified, else False
     """
     return pwd_context.verify(plain_password, hashed_password)
-
-
-def get_password_hash(password: str) -> str:
-    """
-    Get password hash.
-
-    Parameters
-    ----------
-    password : str
-        Password
-
-    Returns
-    -------
-    str
-        Hashed password
-    """
-    return pwd_context.hash(password)
 
 
 def get_user(db: dict, username: str) -> UserInDB | None:
@@ -149,7 +180,7 @@ def authenticate_user(username: str, password: str) -> UserInDB | None:
     UserInDB | None
         User if authenticated, else None
     """
-    user = get_user(fake_users_db, username)
+    user = get_user(USERS_DB, username)
     if not user:
         return False
     if not verify_password(password, user.hashed_password):
@@ -215,7 +246,7 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]) -> Use
         token_data = TokenData(username=username)
     except JWTError:
         raise credentials_exception
-    user = get_user(fake_users_db, username=token_data.username)
+    user = get_user(USERS_DB, username=token_data.username)
     if user is None:
         raise credentials_exception
     return user
@@ -245,7 +276,7 @@ async def get_current_active_user(current_user: Annotated[User, Depends(get_curr
     return current_user
 
 
-async def create_chat_response(user_id: str, conversation_id: str, message: str) -> AsyncGenerator[str, None]:
+async def create_chat_response(user: UserInDB, conversation_id: str, message: str) -> AsyncGenerator[str, None]:
     """
     Generate a response for a conversation.
 
@@ -254,8 +285,8 @@ async def create_chat_response(user_id: str, conversation_id: str, message: str)
 
     Parameters
     ----------
-    user_id : str
-        User ID
+    user : UserInDB
+        User
 
     conversation_id : str
         Conversation ID
@@ -267,20 +298,11 @@ async def create_chat_response(user_id: str, conversation_id: str, message: str)
     ------
     str
         The response.
-
-    Raises
-    ------
-    HTTPException
-        If OpenAI fails.
     """
-    user = fake_users_db.get(user_id)
-    if user is None:
-        raise HTTPException(status_code=404, detail="User not found")
-
-    memory = user["conversations"].get(conversation_id)
+    memory = user.conversations.get(conversation_id)
     if memory is None:
         memory = ConversationBufferMemory(return_messages=True)
-        user["conversations"][conversation_id] = memory
+        user.conversations[conversation_id] = memory
 
     prompt = ChatPromptTemplate.from_messages(
         [
@@ -308,10 +330,7 @@ async def create_chat_response(user_id: str, conversation_id: str, message: str)
         llm=llm,
     )
 
-    try:
-        run = asyncio.create_task(chain.arun(input=message))
-        async for token in callback_handler.aiter():
-            yield token
-        await run
-    except Exception:
-        raise HTTPException(status_code=400, detail="OpenAI failure")
+    run = asyncio.create_task(chain.arun(input=message))
+    async for token in callback_handler.aiter():
+        yield token
+    await run

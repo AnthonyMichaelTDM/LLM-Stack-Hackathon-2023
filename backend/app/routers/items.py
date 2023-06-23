@@ -1,8 +1,10 @@
 """API endpoints for the chatbot."""
-from fastapi import APIRouter, UploadFile
+from typing import Annotated
+
+from fastapi import APIRouter, Depends, HTTPException, UploadFile
 from fastapi.responses import StreamingResponse
 
-from ..dependencies import ChatRequest, create_chat_response
+from ..dependencies import ChatRequest, create_chat_response, get_current_active_user, User
 
 router = APIRouter()
 
@@ -25,11 +27,13 @@ async def create_upload_file(file: UploadFile) -> dict[str, str]:
 
 
 @router.post("/chat/", response_class=StreamingResponse)
-async def chat(data: ChatRequest) -> StreamingResponse:
+async def chat(current_user: Annotated[User, Depends(get_current_active_user)], data: ChatRequest) -> StreamingResponse:
     """Chat with the AI.
 
     Parameters
     ----------
+    current_user : User
+        Current user
     data : ChatRequest
         Chat request
 
@@ -37,8 +41,16 @@ async def chat(data: ChatRequest) -> StreamingResponse:
     -------
     StreamingResponse
         Response from the AI
+
+    Raises
+    ------
+    HTTPException
+        If OpenAI fails
     """
-    return StreamingResponse(
-        create_chat_response(data.user_id, data.conversation_id, data.message),
-        media_type="text/event-stream",
-    )
+    try:
+        return StreamingResponse(
+            create_chat_response(current_user, data.conversation_id, data.message),
+            media_type="text/event-stream",
+        )
+    except Exception:
+        raise HTTPException(status_code=400, detail="OpenAI failure")

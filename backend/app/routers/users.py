@@ -9,6 +9,7 @@ from ..dependencies import (
     ACCESS_TOKEN_EXPIRE_MINUTES,
     authenticate_user,
     create_access_token,
+    create_user,
     get_current_active_user,
     Token,
     User,
@@ -53,6 +54,26 @@ async def read_own_items(current_user: Annotated[User, Depends(get_current_activ
         Current user's items
     """
     return [{"owner": current_user.username}]
+
+
+@router.get("/signup")
+async def signup(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]) -> dict[str, str]:
+    """Signup."""
+    username = form_data.username
+    password = form_data.password
+    user = authenticate_user(username, password)
+    if user:
+        raise HTTPException(
+            status_code=400,
+            detail="Username already exists",
+        )
+    user = create_user(username, password, form_data.email, form_data.full_name)
+    if not user:
+        raise HTTPException(
+            status_code=400,
+            detail="Error creating user",
+        )
+    return {"message": "User created"}
 
 
 @router.post("/token", response_model=Token)
