@@ -6,6 +6,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 
 from ..dependencies import (
+    ACCESS_TOKEN_EXPIRE_MINUTES,
     authenticate_user,
     create_access_token,
     get_current_active_user,
@@ -13,7 +14,6 @@ from ..dependencies import (
     User,
 )
 
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
 router = APIRouter(
     prefix="/users/me",
     tags=["users"],
@@ -52,7 +52,7 @@ async def read_own_items(current_user: Annotated[User, Depends(get_current_activ
     list[dict[str, str]]
         Current user's items
     """
-    return [{"item_id": "Foo", "owner": current_user.username}]
+    return [{"owner": current_user.username}]
 
 
 @router.post("/token", response_model=Token)
