@@ -13,4 +13,4 @@ async def update_admin() -> dict[str, str]:
     dict[str, str]
         Message
     """
-    return {"message": "Here be admins"}
+    return {"message": "Admin"}

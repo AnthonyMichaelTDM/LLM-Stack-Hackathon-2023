@@ -1,7 +1,7 @@
 {
   "name": "GPU Development Environment",
 
-  "image": "cachechat/development:latest",
+  "image": "project/development:latest",
 
  "extensions": [
     "ms-python.python"
