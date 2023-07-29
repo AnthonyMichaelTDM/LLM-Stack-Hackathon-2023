@@ -3,9 +3,7 @@
 
   "image": "project/development:latest",
 
- "extensions": [
-    "ms-python.python"
-  ],
+  "extensions": ["ms-python.python"],
 
   "postStartCommand": "git config --global --add safe.directory ${containerWorkspaceFolder}"
 }
