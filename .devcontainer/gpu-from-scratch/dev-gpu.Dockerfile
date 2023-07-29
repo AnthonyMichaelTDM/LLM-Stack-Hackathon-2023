@@ -1,16 +1,16 @@
 # use nvidia cuda/cudnn image with miniconda on top
-FROM gpuci/miniconda-cuda:11.3-devel-ubuntu18.04
+FROM gpuci/miniconda-cuda:11.4-devel-ubuntu20.04
 
 # update GPG key and install linux development CLI tools
-RUN apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/3bf863cc.pub \
+RUN apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/3bf863cc.pub \
     && apt update \
     && apt install -y \
-         git \
-         make \
-	 sed \
-	 tmux \
-         vim \
-         wget
+    git \
+    make \
+    sed \
+    tmux \
+    vim \
+    wget
 
 # allow history search in terminal
 RUN echo "\"\e[A\": history-search-backward" > $HOME/.inputrc && echo "\"\e[B\": history-search-forward" $HOME/.inputrc

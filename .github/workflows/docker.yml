@@ -3,11 +3,11 @@ name: docker
 on:
   push:
     branches:
-    - 'main'
+      - "main"
     # rebuild whenever the .devcontainer or the requirements change
     paths:
-    - '.devcontainer/gpu-from-scratch/**'
-    - 'requirements/**'
+      - ".devcontainer/gpu-from-scratch/**"
+      - "requirements/**"
   # allows workflows to be triggered manually
   workflow_dispatch:
 
@@ -15,14 +15,12 @@ jobs:
   docker:
     runs-on: ubuntu-latest
     steps:
-      -
-        name: Login to DockerHub
+      - name: Login to DockerHub
         uses: docker/login-action@v2
         with:
-          username: andrewhinh
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
-      -
-        name: Build and push
+      - name: Build and push
         uses: docker/build-push-action@v3
         with:
           push: true
