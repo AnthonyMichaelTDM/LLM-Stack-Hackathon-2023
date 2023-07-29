@@ -1,14 +1,9 @@
 {
   "name": "GPU Development Environment",
 
-  "image": "cachechat/development:latest",
+  "image": "project/development:latest",
 
-  "runArgs": [
-	  "--gpus",
-	  "all"
-  ],
+  "runArgs": ["--gpus", "all"],
 
- "extensions": [
-    "ms-python.python"
-  ]
+  "extensions": ["ms-python.python"]
 }

@@ -1,4 +1,4 @@
-"""Main application and routing logic for CacheChat API."""
+"""Main application and routing logic for the API."""
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -34,4 +34,4 @@ async def read_root() -> dict[str, str]:
     dict[str, str]
         Message
     """
-    return {"message": "CacheChat API"}
+    return {"message": "API"}

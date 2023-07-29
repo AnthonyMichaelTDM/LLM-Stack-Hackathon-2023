@@ -1,22 +1,11 @@
 """Dependencies for FastAPI app."""
-import asyncio
 from datetime import datetime, timedelta
 import os
-from typing import Annotated, AsyncGenerator
+from typing import Annotated
 
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from jose import jwt, JWTError
-from langchain.callbacks import AsyncIteratorCallbackHandler
-from langchain.chains import ConversationChain
-from langchain.chat_models import ChatOpenAI
-from langchain.memory import ConversationBufferMemory
-from langchain.prompts import (
-    ChatPromptTemplate,
-    HumanMessagePromptTemplate,
-    MessagesPlaceholder,
-    SystemMessagePromptTemplate,
-)
 from passlib.context import CryptContext
 from pydantic import BaseModel
 
@@ -33,7 +22,6 @@ USERS_DB = {
 JWT_SECRET = os.getenv("JWT_SECRET")
 JWT_ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
@@ -66,13 +54,6 @@ class UserInDB(User):
     """User in database model."""
 
     hashed_password: str
-
-
-class ChatRequest(BaseModel):
-    """Request model for chat requests."""
-
-    conversation_id: str
-    message: str
 
 
 # Helper fns
@@ -274,63 +255,3 @@ async def get_current_active_user(current_user: Annotated[User, Depends(get_curr
     if current_user.disabled:
         raise HTTPException(status_code=400, detail="Inactive user")
     return current_user
-
-
-async def create_chat_response(user: UserInDB, conversation_id: str, message: str) -> AsyncGenerator[str, None]:
-    """
-    Generate a response for a conversation.
-
-    It creates a new conversation chain for each message and uses a
-    callback handler to stream responses as they're generated.
-
-    Parameters
-    ----------
-    user : UserInDB
-        User
-
-    conversation_id : str
-        Conversation ID
-
-    message : str
-        Message
-
-    Yields
-    ------
-    str
-        The response.
-    """
-    memory = user.conversations.get(conversation_id)
-    if memory is None:
-        memory = ConversationBufferMemory(return_messages=True)
-        user.conversations[conversation_id] = memory
-
-    prompt = ChatPromptTemplate.from_messages(
-        [
-            SystemMessagePromptTemplate.from_template(
-                "The following is a friendly conversation between a human and an AI. The AI is talkative and "
-                "provides lots of specific details from its context. If the AI does not know the answer to a "
-                "question, it truthfully says it does not know."
-            ),
-            MessagesPlaceholder(variable_name="history"),
-            HumanMessagePromptTemplate.from_template("{input}"),
-        ]
-    )
-
-    callback_handler = AsyncIteratorCallbackHandler()
-
-    llm = ChatOpenAI(
-        callbacks=[callback_handler],
-        streaming=True,
-        openai_api_key=OPENAI_API_KEY,
-    )
-
-    chain = ConversationChain(
-        memory=memory,
-        prompt=prompt,
-        llm=llm,
-    )
-
-    run = asyncio.create_task(chain.arun(input=message))
-    async for token in callback_handler.aiter():
-        yield token
-    await run
