@@ -7,6 +7,7 @@ To contribute, check out the [guide](./CONTRIBUTING.md).
 Using `.env.template` as reference, create a `.env` file with the following:
 
 - JWT secret key (created by running `openssl rand -hex 32`)
+- OpenAI API key (created by signing up for an account [here](https://platform.openai.com/signup))
 
 ### Frontend
 
@@ -70,10 +71,4 @@ To run the backend locally:
 
    ```bash
    gunicorn backend.app.main:app --workers 4 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0
-   ```
-
-To deploy the backend to Heroku:
-
-   ```bash
-   git push heroku main
    ```
