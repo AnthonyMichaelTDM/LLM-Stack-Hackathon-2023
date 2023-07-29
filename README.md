@@ -1,62 +1,71 @@
-# CacheChat
-
-Chat about your data, production-grade style.
-
-## Notes
-
-- You don't need to upload anything to chat. It just helps the AI out, and who doesn't want to do that?
-- You can upload data at any point in the conversation.
-- Once data is uploaded, it can be removed by clicking the "remove" button.
+# Project
 
 ## Contributing
 
 To contribute, check out the [guide](./CONTRIBUTING.md).
 
-### Setup
+Using `.env.template` as reference, create a `.env` file with the following:
 
-1. Clone the repository:
+- JWT secret key (created by running `openssl rand -hex 32`)
+- OpenAI API key (created by signing up for an account [here](https://platform.openai.com/signup))
 
-   ```bash
-   git clone https://github.com/andrewhinh/cachechat.git
-   cd cachechat
-   ```
+### Frontend
 
-2. Using `.env.template` as reference, create a `.env` file with the following:
-   - [OpenAI API key](https://beta.openai.com/account/api-keys)
-   - JWT secret key (created by running `openssl rand -hex 32`)
-
-3. Install conda if necessary:
+First, install the npm dependencies:
 
    ```bash
-   # Install conda: https://conda.io/projects/conda/en/latest/user-guide/install/index.html#regular-installation
-   # If on Windows, install chocolately: https://chocolatey.org/install. Then, run:
-   # choco install make
+   npm install
    ```
 
-4. Create the conda environment locally:
+To run all tests:
+
+   ```bash
+   npm test
+   ```
+
+To run the frontend locally:
+
+   ```bash
+   npm start
+   ```
+
+To create a production build locally:
+
+   ```bash
+   npm run build
+   ```
+
+To deploy the build to GitHub Pages:
+
+   ```bash
+   npm run deploy
+   ```
+
+### Backend
+
+First, create the conda environment locally:
 
    ```bash
    make conda-update
-   conda activate cachechat
+   conda activate project
    make pip-tools
+   pre-commit install
    export PYTHONPATH=.
    echo "export PYTHONPATH=.:$PYTHONPATH" >> ~/.bashrc (or ~/.zshrc)
    # If on Windows, the last two lines probably won't work. Check out this guide for more info: https://datatofish.com/add-python-to-windows-path/
    ```
 
-### Development
+To lint the code manually:
 
-(Recommended) To make `pre-commit` run automatically before every commit:
+   ```bash
+   pre-commit run
+   ```
 
-```bash
-pre-commit install
-```
+To run all tests:
 
-To test the backend:
-
-```bash
-pytest
-```
+   ```bash
+   pytest
+   ```
 
 To run the backend locally:
 

@@ -10,4 +10,4 @@ def test_read_main() -> None:
     """Test the main endpoint."""
     response = client.get("/")
     assert response.status_code == 200
-    assert response.json() == {"message": "CacheChat API"}
+    assert response.json() == {"message": "API"}

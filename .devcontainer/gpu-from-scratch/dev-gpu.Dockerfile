@@ -1,16 +1,16 @@
 # use nvidia cuda/cudnn image with miniconda on top
-FROM gpuci/miniconda-cuda:11.3-devel-ubuntu18.04
+FROM gpuci/miniconda-cuda:11.4-devel-ubuntu20.04
 
 # update GPG key and install linux development CLI tools
-RUN apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/3bf863cc.pub \
+RUN apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/3bf863cc.pub \
     && apt update \
     && apt install -y \
-         git \
-         make \
-	 sed \
-	 tmux \
-         vim \
-         wget
+    git \
+    make \
+    sed \
+    tmux \
+    vim \
+    wget
 
 # allow history search in terminal
 RUN echo "\"\e[A\": history-search-backward" > $HOME/.inputrc && echo "\"\e[B\": history-search-forward" $HOME/.inputrc
@@ -27,7 +27,7 @@ RUN make conda-update
 #   removing environment-setting in /root/.bashrc
 RUN sed -i "s/mesg n || true/tty -s \&\& mesg n/" $HOME/.profile
 RUN sed -i "s/conda activate base//" $HOME/.bashrc
-SHELL ["conda", "run", "--no-capture-output", "-n", "cachechat", "/bin/bash", "-c"]
+SHELL ["conda", "run", "--no-capture-output", "-n", "project", "/bin/bash", "-c"]
 
 # install the core requirements, then remove build files
 COPY ./requirements ./requirements
@@ -37,4 +37,4 @@ RUN make pip-tools && rm -rf ./Makefile ./requirements ./environment.yml
 ENV PYTHONPATH=.:$PYTHONPATH
 
 # run all commands inside the conda environment
-ENTRYPOINT ["conda", "run", "--no-capture-output", "-n", "cachechat", "/bin/bash"]
+ENTRYPOINT ["conda", "run", "--no-capture-output", "-n", "project", "/bin/bash"]

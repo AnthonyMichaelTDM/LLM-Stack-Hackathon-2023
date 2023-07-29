@@ -25,7 +25,8 @@ yarn-debug.log*
 yarn-error.log*
 
 # VSCode
-.vscode/*
+.vscode/
 
 # Python
 **/__pycache__/
+.pytest_cache/
