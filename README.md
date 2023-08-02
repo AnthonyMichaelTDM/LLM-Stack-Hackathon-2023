@@ -9,7 +9,7 @@ Using `.env.template` as reference, create a `.env` file with the following:
 - JWT secret key (created by running `openssl rand -hex 32`)
 - OpenAI API key (created by signing up for an account [here](https://platform.openai.com/signup))
 
-### Frontend
+### Frontend (Node.js + React + Vercel)
 
 First, install the npm dependencies:
 
@@ -35,13 +35,11 @@ To create a production build locally:
    npm run build
    ```
 
-To deploy the build to GitHub Pages:
+To deploy the build to Vercel:
 
-   ```bash
-   npm run deploy
-   ```
+   Upload GitHub repo [here](https://vercel.com/new).
 
-### Backend
+### Backend (Conda + FastAPI + Deta Space)
 
 First, create the conda environment locally:
 
@@ -71,4 +69,13 @@ To run the backend locally:
 
    ```bash
    gunicorn backend.app.main:app --workers 4 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0
+   ```
+
+To deploy the backend to Deta Space:
+
+   Follow steps from [creating a new project in Space](https://fastapi.tiangolo.com/deployment/deta/#create-a-new-project-in-space) to [deploying it to Space](https://fastapi.tiangolo.com/deployment/deta/#check-it).
+
+   ```bash
+   space new
+   space push
    ```
