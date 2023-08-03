@@ -16,9 +16,7 @@ RUN apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/
 RUN echo "\"\e[A\": history-search-backward" > $HOME/.inputrc && echo "\"\e[B\": history-search-forward" $HOME/.inputrc
 
 # move into the root user's home directory
-WORKDIR /backend
-
-RUN file="$(ls)" && echo $file
+WORKDIR /root
 
 # install core Python environment and system packages
 COPY ./Makefile ./environment.yml ./

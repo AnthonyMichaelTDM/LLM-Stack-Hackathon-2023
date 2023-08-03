@@ -8,7 +8,7 @@ repos:
       - id: check-toml # check toml syntax by loading all toml files
       - id: check-yaml # check yaml syntax by loading all yaml files
       - id: check-json # check-json syntax by loading all json files
-        exclude: ^backend/.devcontainer/.*\.json$ # exclude json files in the devcontainer
+        exclude: ^.devcontainer/.*\.json$ # exclude json files in the devcontainer
       - id: check-merge-conflict # check for files with merge conflict strings
         args: ["--assume-in-merge"] #  and run this check even when not explicitly in a merge
       - id: check-added-large-files # check that no "large" files have been added
@@ -47,13 +47,3 @@ repos:
     rev: v0.8.0.4
     hooks:
       - id: shellcheck
-
-  # Because this is a monorepo, we need to run the hooks in the backend directory
-  - repo: local
-    hooks:
-      - id: backend
-        name: backend
-        language: system
-        entry: bash -c 'cd backend'
-
-files: '.*'

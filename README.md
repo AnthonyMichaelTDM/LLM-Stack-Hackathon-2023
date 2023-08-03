@@ -4,12 +4,6 @@
 
 To contribute, check out the [guide](./CONTRIBUTING.md).
 
-Before diving in, install pre-commit hooks:
-
-   ```bash
-   pre-commit install
-   ```
-
 ### Frontend (Node.js + React + Vercel)
 
 Move into the `frontend` directory:
@@ -64,7 +58,25 @@ To deploy the build to Vercel:
 
 ### Backend (Conda + FastAPI + Deta Space)
 
-Move into the `backend` directory:
+Either create the conda environment locally:
+
+   ```bash
+   make conda-update
+   conda activate project
+   make pip-tools
+   pre-commit install
+   export PYTHONPATH=.
+   echo "export PYTHONPATH=.:$PYTHONPATH" >> ~/.bashrc (or ~/.zshrc)
+   # If on Windows, the last two lines probably won't work. Check out this guide for more info: https://datatofish.com/add-python-to-windows-path/
+   ```
+
+Or create the conda environment in a Docker container:
+
+- In [this guide](https://code.visualstudio.com/docs/devcontainers/containers#_getting-started):
+  - [Install the prerequisites](https://code.visualstudio.com/docs/devcontainers/containers#_getting-started).
+  - Then open the current working directory (`backend`) [in the container](https://code.visualstudio.com/docs/devcontainers/containers#_quick-start-open-an-existing-folder-in-a-container).
+
+Then move into the `backend` directory:
 
    ```bash
    cd backend
@@ -78,27 +90,10 @@ Create a `.env` file:
    echo "OPENAI_API_KEY=$OPENAI_API_KEY" >> .env
    ```
 
-Either create the conda environment locally:
-
-   ```bash
-   make conda-update
-   conda activate project
-   make pip-tools
-   export PYTHONPATH=.
-   echo "export PYTHONPATH=.:$PYTHONPATH" >> ~/.bashrc (or ~/.zshrc)
-   # If on Windows, the last two lines probably won't work. Check out this guide for more info: https://datatofish.com/add-python-to-windows-path/
-   ```
-
-Or create the conda environment in a Docker container:
-
-- In [this guide](https://code.visualstudio.com/docs/devcontainers/containers#_getting-started):
-  - [Install the prerequisites](https://code.visualstudio.com/docs/devcontainers/containers#_getting-started).
-  - Then open the current working directory (`backend`) [in the container](https://code.visualstudio.com/docs/devcontainers/containers#_quick-start-open-an-existing-folder-in-a-container).
-
 To lint the code manually:
 
    ```bash
-   re-commit run --all-files
+   pre-commit run --all-files
    ```
 
 To run all tests:
