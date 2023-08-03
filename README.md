@@ -98,7 +98,7 @@ Or create the conda environment in a Docker container:
 To lint the code manually:
 
    ```bash
-   pre-commit run
+   re-commit run --all-files
    ```
 
 To run all tests:
