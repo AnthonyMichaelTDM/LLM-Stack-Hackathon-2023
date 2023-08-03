@@ -6,7 +6,7 @@ on:
       - "main"
     # rebuild whenever the .devcontainer or the requirements change
     paths:
-      - ".devcontainer/gpu-from-scratch/**"
+      - ".devcontainer/**"
       - "requirements/**"
   # allows workflows to be triggered manually
   workflow_dispatch:
@@ -25,4 +25,4 @@ jobs:
         with:
           push: true
           tags: project/development:latest
-          file: .backend/devcontainer/gpu-from-scratch/dev-gpu.Dockerfile
+          file: .devcontainer/gpu-from-scratch/dev-gpu.Dockerfile
