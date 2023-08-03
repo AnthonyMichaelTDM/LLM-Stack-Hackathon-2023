@@ -4,14 +4,22 @@
 
 To contribute, check out the [guide](./CONTRIBUTING.md).
 
-Using `.env.template` as reference, create a `.env` file with the following:
-
-- JWT secret key (created by running `openssl rand -hex 32`)
-- OpenAI API key (created by signing up for an account [here](https://platform.openai.com/signup))
-
 ### Frontend (Node.js + React + Vercel)
 
-First, install the npm dependencies:
+Move into the `frontend` directory:
+
+   ```bash
+   cd frontend
+   ```
+
+Create a `.env` file:
+
+   ```bash
+   JWT_SECRET=$(openssl rand -hex 32)
+   echo "JWT_SECRET=$JWT_SECRET" >> .env
+   ```
+
+Install the npm dependencies:
 
    ```bash
    npm install
@@ -37,11 +45,34 @@ To create a production build locally:
 
 To deploy the build to Vercel:
 
-   Upload GitHub repo [here](https://vercel.com/new).
+   ```bash
+   npm i -g vercel
+   vercel
+      # Set up and deploy “path to your project”? [Y/n] y
+      # Which scope do you want to deploy to? <org account>
+      # Link to existing project? [y/N] n
+      # What’s your project’s name? <project name>
+      # In which directory is your code located? ./
+      # Want to override the settings? [y/N] n
+   ```
 
 ### Backend (Conda + FastAPI + Deta Space)
 
-First, create the conda environment locally:
+Move into the `backend` directory:
+
+   ```bash
+   cd backend
+   ```
+
+Create a `.env` file:
+
+   ```bash
+   # Get an OpenAI API key [here](https://platform.openai.com/signup)
+   OPENAI_API_KEY=<your key here>
+   echo "OPENAI_API_KEY=$OPENAI_API_KEY" >> .env
+   ```
+
+Create the conda environment locally:
 
    ```bash
    make conda-update
@@ -68,12 +99,12 @@ To run all tests:
 To run the backend locally:
 
    ```bash
-   gunicorn backend.app.main:app --workers 4 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0
+   gunicorn app.main:app --workers 4 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0
    ```
 
 To deploy the backend to Deta Space:
 
-   Follow steps from [creating a new project in Space](https://fastapi.tiangolo.com/deployment/deta/#create-a-new-project-in-space) to [deploying it to Space](https://fastapi.tiangolo.com/deployment/deta/#check-it).
+- Follow steps from [creating a new project in Space](https://fastapi.tiangolo.com/deployment/deta/#create-a-new-project-in-space) to [deploying it to Space](https://fastapi.tiangolo.com/deployment/deta/#check-it).
 
    ```bash
    space new
