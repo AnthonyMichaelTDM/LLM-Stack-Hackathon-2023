@@ -4,6 +4,12 @@
 
 To contribute, check out the [guide](./CONTRIBUTING.md).
 
+Before diving in, install pre-commit hooks:
+
+   ```bash
+   pre-commit install
+   ```
+
 ### Frontend (Node.js + React + Vercel)
 
 Move into the `frontend` directory:
@@ -78,7 +84,6 @@ Either create the conda environment locally:
    make conda-update
    conda activate project
    make pip-tools
-   pre-commit install
    export PYTHONPATH=.
    echo "export PYTHONPATH=.:$PYTHONPATH" >> ~/.bashrc (or ~/.zshrc)
    # If on Windows, the last two lines probably won't work. Check out this guide for more info: https://datatofish.com/add-python-to-windows-path/
