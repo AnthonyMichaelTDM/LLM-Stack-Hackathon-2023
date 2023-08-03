@@ -1,5 +1,10 @@
 name: pre-commit
 
+repos:
+  - repo: local
+    hooks:
+      - entry: bash -c 'cd backend'
+
 on:
   pull_request:
   push:
