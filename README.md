@@ -72,7 +72,7 @@ Create a `.env` file:
    echo "OPENAI_API_KEY=$OPENAI_API_KEY" >> .env
    ```
 
-Create the conda environment locally:
+Either create the conda environment locally:
 
    ```bash
    make conda-update
@@ -83,6 +83,12 @@ Create the conda environment locally:
    echo "export PYTHONPATH=.:$PYTHONPATH" >> ~/.bashrc (or ~/.zshrc)
    # If on Windows, the last two lines probably won't work. Check out this guide for more info: https://datatofish.com/add-python-to-windows-path/
    ```
+
+Or create the conda environment in a Docker container:
+
+- In [this guide](https://code.visualstudio.com/docs/devcontainers/containers#_getting-started):
+  - [Install the prerequisites](https://code.visualstudio.com/docs/devcontainers/containers#_getting-started).
+  - Then open the current working directory (`backend`) [in the container](https://code.visualstudio.com/docs/devcontainers/containers#_quick-start-open-an-existing-folder-in-a-container).
 
 To lint the code manually:
 
