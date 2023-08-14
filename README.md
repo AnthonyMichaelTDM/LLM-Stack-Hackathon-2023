@@ -4,7 +4,7 @@
 
 To contribute, check out the [guide](./CONTRIBUTING.md).
 
-### Frontend (Node.js + React + Vercel)
+### Frontend (Node.js + React + Vite + Vercel)
 
 Move into the `frontend` directory:
 
@@ -23,18 +23,19 @@ Install the npm dependencies:
 
    ```bash
    npm install
+   npm i -g vercel
    ```
 
-To run all tests:
+To lint the code:
 
    ```bash
-   npm test
+   npm run lint
    ```
 
 To run the frontend locally:
 
    ```bash
-   npm start
+   npm run dev
    ```
 
 To create a production build locally:
@@ -43,11 +44,10 @@ To create a production build locally:
    npm run build
    ```
 
-To deploy the build to Vercel:
+If a build needs to be deployed to Vercel manually (pushing to the `main` branch will automatically deploy to Vercel):
 
    ```bash
-   npm i -g vercel
-   vercel
+   vercel deploy
       # Set up and deploy “path to your project”? [Y/n] y
       # Which scope do you want to deploy to? <org account>
       # Link to existing project? [y/N] n
