@@ -47,12 +47,13 @@ To create a production build locally:
 If a build needs to be deployed to Vercel manually (pushing to the `main` branch will automatically deploy to Vercel):
 
    ```bash
+   cd ..
    vercel deploy
       # Set up and deploy “path to your project”? [Y/n] y
       # Which scope do you want to deploy to? <org account>
       # Link to existing project? [y/N] n
       # What’s your project’s name? <project name>
-      # In which directory is your code located? ./
+      # In which directory is your code located? ./frontend
       # Want to override the settings? [y/N] n
    ```
 
