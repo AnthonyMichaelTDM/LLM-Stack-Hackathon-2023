@@ -6,24 +6,15 @@ To contribute, check out the [guide](./CONTRIBUTING.md).
 
 ### Frontend (Node.js + React + Vite + Vercel)
 
-Move into the `frontend` directory:
+Set up your local environment:
 
    ```bash
-   cd frontend
-   ```
-
-Create a `.env` file:
-
-   ```bash
-   JWT_SECRET=$(openssl rand -hex 32)
-   echo "JWT_SECRET=$JWT_SECRET" >> .env
-   ```
-
-Install the npm dependencies:
-
-   ```bash
-   npm install
-   npm i -g vercel
+   make frontend-setup
+      # cd frontend
+      # JWT_SECRET=$(openssl rand -hex 32)
+      # echo "JWT_SECRET=$JWT_SECRET" >> .env
+      # npm install
+      # npm i -g vercel
    ```
 
 To lint the code:
@@ -44,7 +35,13 @@ To create a production build locally:
    npm run build
    ```
 
-If a build needs to be deployed to Vercel manually (pushing to the `main` branch will automatically deploy to Vercel):
+To preview the production build locally:
+
+   ```bash
+   npm run preview
+   ```
+
+If a build needs to be deployed to Vercel manually (pushing to GitHub will automatically deploy to Vercel):
 
    ```bash
    cd ..
@@ -64,11 +61,7 @@ Either create the conda environment locally:
    ```bash
    make conda-update
    conda activate project
-   make pip-tools
-   pre-commit install
-   export PYTHONPATH=.
-   echo "export PYTHONPATH=.:$PYTHONPATH" >> ~/.bashrc (or ~/.zshrc)
-   # If on Windows, the last two lines probably won't work. Check out this guide for more info: https://datatofish.com/add-python-to-windows-path/
+      # conda env update --prune -f environment.yml
    ```
 
 Or create the conda environment in a Docker container:
@@ -77,10 +70,20 @@ Or create the conda environment in a Docker container:
   - [Install the prerequisites](https://code.visualstudio.com/docs/devcontainers/containers#_getting-started).
   - Then open the current working directory (`backend`) [in the container](https://code.visualstudio.com/docs/devcontainers/containers#_quick-start-open-an-existing-folder-in-a-container).
 
-Then move into the `backend` directory:
+Set up the conda environment:
 
    ```bash
-   cd backend
+   make pip-tools
+   make backend-setup
+      # make pip-tools
+         # pip install pip-tools==7.1.0 setuptools==68.0.0
+         # pip-compile requirements/prod.in && pip-compile requirements/dev.in
+         # pip-sync requirements/prod.txt requirements/dev.txt
+      # make backend-setup
+         # pre-commit install
+         # export PYTHONPATH=.
+         # echo "export PYTHONPATH=.:$PYTHONPATH" >> ~/.bashrc
+         # cd backend
    ```
 
 Create a `.env` file:
@@ -89,6 +92,12 @@ Create a `.env` file:
    # Get an OpenAI API key [here](https://platform.openai.com/signup)
    OPENAI_API_KEY=<your key here>
    echo "OPENAI_API_KEY=$OPENAI_API_KEY" >> .env
+   ```
+
+To bump transitive dependencies:
+
+   ```bash
+   make pip-tools-upgrade
    ```
 
 To lint the code manually:
