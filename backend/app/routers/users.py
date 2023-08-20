@@ -56,7 +56,7 @@ async def read_own_items(current_user: Annotated[User, Depends(get_current_activ
     return [{"owner": current_user.username}]
 
 
-@router.get("/signup")
+@router.post("/signup")
 async def signup(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]) -> dict[str, str]:
     """Signup."""
     username = form_data.username
@@ -67,7 +67,7 @@ async def signup(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]) -> 
             status_code=400,
             detail="Username already exists",
         )
-    user = create_user(username, password, form_data.email, form_data.full_name)
+    user = create_user(username, password)
     if not user:
         raise HTTPException(
             status_code=400,

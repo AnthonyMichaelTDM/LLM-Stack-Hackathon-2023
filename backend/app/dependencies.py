@@ -3,11 +3,14 @@ from datetime import datetime, timedelta
 import os
 from typing import Annotated
 
+from dotenv import load_dotenv
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from jose import jwt, JWTError
 from passlib.context import CryptContext
 from pydantic import BaseModel
+
+load_dotenv()
 
 USERS_DB = {
     "example": {
@@ -16,7 +19,6 @@ USERS_DB = {
         "email": "example@example.com",
         "hashed_password": "$2b$12$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW",
         "disabled": False,
-        "conversations": {},
     }
 }
 JWT_SECRET = os.getenv("JWT_SECRET")
@@ -24,7 +26,7 @@ JWT_ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/users/me/token")
 
 
 # Models
@@ -74,7 +76,7 @@ def get_password_hash(password: str) -> str:
     return pwd_context.hash(password)
 
 
-def create_user(username: str, password: str, email: str | None = None, full_name: str | None = None) -> UserInDB:
+def create_user(username: str, password: str) -> UserInDB:
     """
     Create user.
 
@@ -84,10 +86,6 @@ def create_user(username: str, password: str, email: str | None = None, full_nam
         Username
     password : str
         Password
-    email : str | None, optional
-        Email, by default None
-    full_name : str | None, optional
-        Full name, by default None
 
     Returns
     -------
@@ -97,8 +95,8 @@ def create_user(username: str, password: str, email: str | None = None, full_nam
     hashed_password = get_password_hash(password)
     USERS_DB[username] = {
         "username": username,
-        "full_name": full_name,
-        "email": email,
+        "full_name": None,
+        "email": None,
         "hashed_password": hashed_password,
         "disabled": False,
         "conversations": {},

@@ -5,8 +5,6 @@ help:
 # Frontend setup
 frontend-setup:
 	cd frontend
-	JWT_SECRET=$(openssl rand -hex 32)
-	echo "JWT_SECRET=$JWT_SECRET" >> .env
 	npm install
 	npm i -g vercel
 

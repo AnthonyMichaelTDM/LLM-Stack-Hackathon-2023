@@ -11,8 +11,6 @@ Set up your local environment:
    ```bash
    make frontend-setup
       # cd frontend
-      # JWT_SECRET=$(openssl rand -hex 32)
-      # echo "JWT_SECRET=$JWT_SECRET" >> .env
       # npm install
       # npm i -g vercel
    ```
@@ -92,6 +90,8 @@ Create a `.env` file:
    # Get an OpenAI API key [here](https://platform.openai.com/signup)
    OPENAI_API_KEY=<your key here>
    echo "OPENAI_API_KEY=$OPENAI_API_KEY" >> .env
+   JWT_SECRET=$(openssl rand -hex 32)
+   echo "JWT_SECRET=$JWT_SECRET" >> .env
    ```
 
 To bump transitive dependencies:
@@ -112,7 +112,15 @@ To run all tests:
    pytest
    ```
 
-To run the backend locally:
+To run the backend locally,
+
+- In development mode:
+
+   ```bash
+   uvicorn app.main:app --reload
+   ```
+
+- In production mode:
 
    ```bash
    gunicorn app.main:app --workers 4 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0
