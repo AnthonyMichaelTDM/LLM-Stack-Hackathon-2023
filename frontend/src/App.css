@@ -4,3 +4,25 @@
   padding: 2rem;
   text-align: center;
 }
+
+nav,
+div,
+form,
+label {
+  display: flex;
+}
+
+nav {
+  justify-content: end;
+}
+
+nav,
+form {
+  gap: 0.5rem;
+}
+
+div,
+form,
+label {
+  flex-direction: column;
+}
