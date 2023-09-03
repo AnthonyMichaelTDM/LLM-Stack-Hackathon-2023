@@ -2,7 +2,10 @@ function SignUp() {
   return (
     <>
       <h1>Sign Up</h1>
-      <form action={import.meta.env.VITE_API_URL + "/user/me/signup"} method="POST">
+      <form
+        action={import.meta.env.VITE_API_URL + "/user/me/signup"}
+        method="POST"
+      >
         <label>
           Username
           <input type="text" name="username" />

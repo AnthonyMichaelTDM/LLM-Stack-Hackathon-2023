@@ -2,7 +2,10 @@ function Login() {
   return (
     <>
       <h1>Login</h1>
-      <form action={import.meta.env.VITE_API_URL + "/user/me/token"} method="POST">
+      <form
+        action={import.meta.env.VITE_API_URL + "/user/me/token"}
+        method="POST"
+      >
         <label>
           Username
           <input type="text" name="username" />

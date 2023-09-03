@@ -1,0 +1,12 @@
+aside {
+  margin: 0;
+  display: flex;
+  place-items: center;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.gif {
+  width: 50vw;
+  object-fit: contain;
+}

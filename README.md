@@ -15,6 +15,18 @@ Set up your local environment:
       # npm i -g vercel
    ```
 
+Create a `.env` file:
+
+   ```bash
+   # Get a Giphy API key: https://support.giphy.com/hc/en-us/articles/360020283431-Request-A-GIPHY-API-Key
+   VITE_GIPHY_API_KEY=<your key here>
+   echo "VITE_GIPHY_API_KEY=$VITE_GIPHY_API_KEY" >> .env
+   VITE_API_URL=http://localhost:8000
+   echo "VITE_API_URL=$VITE_API_URL" >> .env
+   VITE_API_KEY=localhost
+   echo "VITE_API_KEY=$VITE_API_KEY" >> .env
+   ```
+
 To lint the code:
 
    ```bash
@@ -39,7 +51,7 @@ To preview the production build locally:
    npm run preview
    ```
 
-If a build needs to be deployed to Vercel manually (pushing to GitHub will automatically deploy to Vercel):
+If a local build needs to be deployed to Vercel manually (remember, pushing to GitHub will automatically deploy to Vercel):
 
    ```bash
    cd ..
@@ -52,7 +64,7 @@ If a build needs to be deployed to Vercel manually (pushing to GitHub will autom
       # Want to override the settings? [y/N] n
    ```
 
-### Backend (Conda + FastAPI + Deta Space)
+### Backend (Conda + FastAPI + Heroku)
 
 Either create the conda environment locally:
 
@@ -87,7 +99,7 @@ Set up the conda environment:
 Create a `.env` file:
 
    ```bash
-   # Get an OpenAI API key [here](https://platform.openai.com/signup)
+   # Get an OpenAI API key: https://platform.openai.com/signup
    OPENAI_API_KEY=<your key here>
    echo "OPENAI_API_KEY=$OPENAI_API_KEY" >> .env
    JWT_SECRET=$(openssl rand -hex 32)
@@ -126,11 +138,18 @@ To run the backend locally,
    gunicorn app.main:app --workers 4 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0
    ```
 
-To deploy the backend to Deta Space:
+To deploy the backend to Heroku:
 
-- Follow steps from [creating a new project in Space](https://fastapi.tiangolo.com/deployment/deta/#create-a-new-project-in-space) to [deploying it to Space](https://fastapi.tiangolo.com/deployment/deta/#check-it).
+- For staging:
 
    ```bash
-   space new
-   space push
+   heroku git:remote -a learning-react-stag -r stag
+   git push heroku dev
+   ```
+
+- For production:
+
+   ```bash
+   heroku git:remote -a learning-react-prod -r prod
+   git push heroku main
    ```

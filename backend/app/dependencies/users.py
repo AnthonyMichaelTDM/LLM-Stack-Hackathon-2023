@@ -1,21 +1,17 @@
-"""Dependencies for FastAPI app."""
+"""Dependencies for user endpoints."""
 from datetime import datetime, timedelta
 import os
 from typing import Annotated
 
-from dotenv import load_dotenv
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from jose import jwt, JWTError
 from passlib.context import CryptContext
 from pydantic import BaseModel
 
-load_dotenv()
-
 USERS_DB = {
     "example": {
         "username": "example",
-        "full_name": "Example Example",
         "email": "example@example.com",
         "hashed_password": "$2b$12$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW",
         "disabled": False,
@@ -48,7 +44,6 @@ class User(BaseModel):
 
     username: str
     email: str | None = None
-    full_name: str | None = None
     disabled: bool | None = None
 
 
@@ -95,7 +90,6 @@ def create_user(username: str, password: str) -> UserInDB:
     hashed_password = get_password_hash(password)
     USERS_DB[username] = {
         "username": username,
-        "full_name": None,
         "email": None,
         "hashed_password": hashed_password,
         "disabled": False,

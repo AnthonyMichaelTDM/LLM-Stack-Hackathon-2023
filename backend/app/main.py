@@ -1,9 +1,12 @@
 """Main application and routing logic for the API."""
+from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .internal import admin
 from .routers import items, users
+
+load_dotenv()
 
 app = FastAPI()
 app.include_router(users.router)
