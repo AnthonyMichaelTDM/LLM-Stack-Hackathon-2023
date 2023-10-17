@@ -75,7 +75,7 @@ typing-inspect==0.9.0
 typing_extensions==4.6.3
 tzdata==2023.3
 uc-micro-py==1.0.2
-urllib3==2.0.2
+urllib3==2.0.7
 uvicorn==0.22.0
 vecdb==0.0.6
 websockets==11.0.3
